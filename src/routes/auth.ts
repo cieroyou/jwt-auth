@@ -1,22 +1,21 @@
+//load envFile
+import dotenv from 'dotenv'
 import { Router, Request, Response, NextFunction} from 'express'
-import { sign } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
+dotenv.config();
 const route = Router();
 
 // baseUrl : /api/auth
 export default (app: Router) => {
     // api/auth/signup
     // 토큰 없이 api 요청 -> 회원가입 및 token 발급
-    route.get('/signup', (req, res) => {
+    route.post('/signup', async (req, res) => {
         //Mock user
-        const user = {
-            id: 1,
-            username :'sera',
-            email: 'cieroyou1@gmail.com'
-        }
-        sign({user: user}, 'secretkey', (err: any, token) => {
-            return res.send(token)
-        })
-        // return res.send('/auth/signup')
+        const username = req.body.username;
+        const user = { name: username };
+
+        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+        res.json(accessToken);
     })
     
     // api/auth/signin

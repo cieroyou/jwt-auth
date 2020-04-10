@@ -1,11 +1,15 @@
+// import { express } from 'express';
 // const express = require('express');
 // const app = express();
 // const port = 3000;
 
 import express, {Application, Request, Response, NextFunction} from 'express';
-const port = 3001;
-import routes from './routes'
+// import * as express from 'express';
 
+
+const port = 3000;
+import routes from './routes'
+import bodyParser from 'body-parser';
 
 const msg_startServer = 
 `################################################
@@ -16,6 +20,8 @@ async function startServer(){
     // const app: express.Application = express();
     const app: Application = express();
     
+    app.use(bodyParser.urlencoded({extended:true}));
+    app.use(bodyParser.json())
     // app.get('/', (req: Request, res: Response, next: NextFunction) => {
     //     res.send('Hello')
     // })
