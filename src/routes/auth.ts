@@ -1,14 +1,35 @@
 //load envFile
-import dotenv from 'dotenv'
-import { Router, Request, Response, NextFunction} from 'express'
-import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv';
+import { Router, Request, Response, NextFunction} from 'express';
+import jwt from 'jsonwebtoken';
+import { IUser } from '../interfaces/IUser'
 dotenv.config();
 const route = Router();
 
+// It will be null if sever restart. So you have to save refreshToken to database recommend Redis
+let refreshTokens = [];
 
+const generateAccessToken = (user: IUser) => {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15s'});
+}
 
 // baseUrl : /api/auth
 export default (app: Router) => {
+    // accessToken 재발급
+    route.post('/token', async (req: Request, res: Response) => {
+        const refreshToken = req.body.token;
+        if(refreshToken === null) return res.sendStatus(401);
+        if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+        return res.sendStatus(400);
+        //Todo : If refreshToken is expired, add logic
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err:any, user:any)=>{
+            if(err) {
+                return res.sendStatus(403);
+            }
+            const accessToken = generateAccessToken(user);
+            return res.json({accessToken: accessToken});
+        })
+    })
     // api/auth/signup
     // 토큰 없이 api 요청 -> 회원가입 및 token 발급
     route.post('/signup', async (req, res) => {
@@ -16,8 +37,11 @@ export default (app: Router) => {
         const username = req.body.username;
         const user = { name: username };
 
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-        res.json({acccessToken : accessToken});
+        const accessToken = generateAccessToken(user);
+        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+
+        refreshTokens.push(refreshToken);
+        res.json({acccessToken : accessToken, refreshToken: refreshToken});
     })
 
     

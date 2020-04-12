@@ -9,5 +9,12 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/item/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2VyYSIsImlhdCI6MTU4NjUwMzEwNX0.utDubnOhPgD6-jacJUWTqPfYtPLKQkPzjIdMKzlJVRA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2VyYSIsImlhdCI6MTU4NjY4NTQwOCwiZXhwIjoxNTg2Njg1NDIzfQ.LTMn2LjWIYsDTcf0uETTyG24JJWvG8Q-gTCehVa4UnA
 
+###
+POST http://localhost:3000/auth/token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2VyYSIsImlhdCI6MTU4NjY4NTc1Nn0.47blwdMzBGGlsjPEXXmRMuY4GQSGAT4pUOMBf1zWp-s"
+}
