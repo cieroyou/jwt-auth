@@ -10,7 +10,7 @@ const route = Router();
 let refreshTokens = [];
 
 const generateAccessToken = (user: IUser) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15s'});
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20m'});
 }
 
 // baseUrl : /api/auth
@@ -18,16 +18,21 @@ export default (app: Router) => {
     // accessToken 재발급
     route.post('/token', async (req: Request, res: Response) => {
         const refreshToken = req.body.token;
-        if(refreshToken === null) return res.sendStatus(401);
-        if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
-        return res.sendStatus(400);
+        if(refreshToken === null) {
+            res.sendStatus(401);
+            // return;
+        }
+        if(!refreshTokens.includes(refreshToken)){
+            res.sendStatus(403);
+            // return;
+        }
         //Todo : If refreshToken is expired, add logic
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err:any, user:any)=>{
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err:any, user:IUser)=>{
             if(err) {
-                return res.sendStatus(403);
+                res.sendStatus(403);
             }
             const accessToken = generateAccessToken(user);
-            return res.json({accessToken: accessToken});
+            res.json({accessToken: accessToken});
         })
     })
     // api/auth/signup

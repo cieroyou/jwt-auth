@@ -5,7 +5,7 @@
 
 import express, {Application, Request, Response, NextFunction} from 'express';
 // import * as express from 'express';
-
+import HttpException from '../src/exceptions/HttpException'
 
 const port = 3000;
 import routes from './routes'
@@ -28,15 +28,16 @@ async function startServer(){
     app.use('/',routes());
 
     // authError handlers
-    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-        console.log(`error on request ${req.method} | ${req.url} | ${err.status} | ${err.code}`)
+    app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
+        console.log(`error on request ${req.method} | ${req.url} | ${err.status} | ${err.message}`)
         if(err.name === 'UnauthorizedError'){
             return res
             .status(err.status)
             .send({message: err.message})
             .end();
         }
-        return next(err);
+        res.status(err.status).send({message: err.message}).end
+        next(err);
     })
     app.listen(port, err => {
         if(err){

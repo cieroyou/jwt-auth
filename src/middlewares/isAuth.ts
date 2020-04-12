@@ -1,25 +1,29 @@
+import { IUser } from './../interfaces/IUser';
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import HttpException from '../exceptions/HttpException'
 // import jwt from 'express-jwt'
 
-const isAuth = (req: Request, res: Response, next: NextFunction) => {
+
+const isAuth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization']
     // const authHeader = req.headers.authorization; //Bearer
 
-    //if we had authHeader then return the authHeader.spilt(' ')[1]
+    //if we had authHeader, then return the authHeader.spilt(' ')[1]
     const token = authHeader && authHeader.split(' ')[1]
 
-    if(token === null || undefined) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user:any) => {
-        if(err) {
-            return res.sendStatus(403);
-        }
-        //user : payload decoded from token
+    if(token === null || token ===undefined){
+        next(new HttpException(401,'Not include AccessToken'));        
+    } 
+   
+    try{
+        const user = await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        console.log('user', user);
         req.user = user;
         next();
-    })
-    console.log('checking Auth')
+    }catch(err){
+        next(new HttpException(403, err.message))
+    }
   }
 
 export default isAuth;
