@@ -6,3 +6,8 @@ Content-Type: application/json
 {
     "username": "Sera"
 }
+
+###
+GET http://localhost:3000/auth/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2VyYSIsImlhdCI6MTU4NjUwMzEwNX0.utDubnOhPgD6-jacJUWTqPfYtPLKQkPzjIdMKzlJVRA
+

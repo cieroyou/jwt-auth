@@ -5,6 +5,26 @@ import jwt from 'jsonwebtoken'
 dotenv.config();
 const route = Router();
 
+//middleware
+const authentifiacteToken = (req,res,next) => {
+    const authHeader = req.headers['authorization']
+    // const authHeader = req.headers.authorization; //Bearer
+
+    //if we had authHeader then return the authHeader.spilt(' ')[1]
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if(token === null || undefined) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user:any) => {
+        if(err) {
+            return res.sendStatus(403);
+        }
+        //user : payload decoded from token
+        req.user = user;
+        next();
+    })
+}
+
 // baseUrl : /api/auth
 export default (app: Router) => {
     // api/auth/signup
@@ -15,7 +35,23 @@ export default (app: Router) => {
         const user = { name: username };
 
         const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-        res.json(accessToken);
+        res.json({acccessToken : accessToken});
+    })
+
+    route.get('/posts', authentifiacteToken, (req,res) => {
+        console.log('req.user' , req.user);
+        const posts = [
+            {
+                name: 'Kyle',
+                title: 'Post 1'
+            },
+            {
+                name: 'Sera',
+                title: 'Post 2'
+            }
+        ]
+        const user = req.user;
+        res.json(posts.filter(post => post.name === req.user.name))
     })
     
     // api/auth/signin
