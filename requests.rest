@@ -9,7 +9,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/item/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2VyYSIsImlhdCI6MTU4NjY4NTQwOCwiZXhwIjoxNTg2Njg1NDIzfQ.LTMn2LjWIYsDTcf0uETTyG24JJWvG8Q-gTCehVa4UnA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2VyYSIsImlhdCI6MTU4NjcwNzA5OCwiZXhwIjoxNTg2NzA4Mjk4fQ.TgmK74ih7z25LzHSqnPU3Z9Wv9flXYeg73bTCqFAI3k
 
 ###
 POST http://localhost:3000/auth/token

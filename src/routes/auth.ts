@@ -21,10 +21,14 @@ export default (app: Router) => {
         if(refreshToken === null) {
             res.sendStatus(401);
             // return;
+        }else{
+
         }
         if(!refreshTokens.includes(refreshToken)){
             res.sendStatus(403);
             // return;
+        }else{
+            
         }
         //Todo : If refreshToken is expired, add logic
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err:any, user:IUser)=>{

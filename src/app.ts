@@ -1,51 +1,59 @@
-// import { express } from 'express';
-// const express = require('express');
-// const app = express();
-// const port = 3000;
-
 import express, {Application, Request, Response, NextFunction} from 'express';
-// import * as express from 'express';
 import HttpException from '../src/exceptions/HttpException'
 
 const port = 3000;
 import routes from './routes'
 import bodyParser from 'body-parser';
 
-const msg_startServer = 
-`################################################
-🛡️  Server listening on port: ${port} 🛡️ 
-################################################`;
-
-async function startServer(){
-    // const app: express.Application = express();
-    const app: Application = express();
+export class App {
+    private app : Application;
+    private msg_startServer : string;
     
-    app.use(bodyParser.urlencoded({extended:true}));
-    app.use(bodyParser.json())
-    // app.get('/', (req: Request, res: Response, next: NextFunction) => {
-    //     res.send('Hello')
-    // })
-    app.use('/',routes());
+    constructor(private port?: number | string){
+        this.app = express();
+        this.settings();
+        this.middlewares();
+        this.routes();
+        this.errorHandlers();
+        this.msg_startServer = 
+        `################################################
+🛡️  Server listening on port: ${this.app.get('port')} 🛡️ 
+################################################`;
+    }
 
-    // authError handlers
-    app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
-        console.log(`error on request ${req.method} | ${req.url} | ${err.status} | ${err.message}`)
-        if(err.name === 'UnauthorizedError'){
-            return res
-            .status(err.status)
-            .send({message: err.message})
-            .end();
-        }
-        res.status(err.status).send({message: err.message}).end
-        next(err);
-    })
-    app.listen(port, err => {
-        if(err){
-            console.log(err);
+    settings(){
+        this.app.set('port', this.port || process.env.port || 3000);
+    }
+
+    middlewares(){
+        this.app.use(bodyParser.urlencoded({extended:true}));
+        this.app.use(bodyParser.json())
+    }
+
+    routes(){
+        this.app.use('/',routes());
+    }
+
+    errorHandlers(){
+        this.app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
+            console.log(`error on request ${req.method} | ${req.url} | ${err.status} | ${err.message}`)
+            if(err.name === 'UnauthorizedError'){
+                return res
+                .status(err.status)
+                .send({message: err.message})
+                .end();
+            }
+            res.status(err.status).send({message: err.message}).end
+            next(err);
+        })
+    }
+    async listen(){
+        try {
+            await this.app.listen(this.app.get('port'));
+            console.log(this.msg_startServer);
+        } catch (error) {
+            console.log(error);
             return;
         }
-        console.log(msg_startServer);
-    })
+    }
 }
-
-startServer();
